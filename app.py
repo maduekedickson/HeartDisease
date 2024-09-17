@@ -1,13 +1,18 @@
 import streamlit as st
 import pandas as pd
 import pickle
+from PIL import Image
+import os
 
-st.image("image.jpg")
+# Load the image at the top of the app
+image = Image.open('./image.jpg')
 
+# Display the image
+st.image(image, use_column_width=True)
 
 # Load the saved model
-with open("random_forest_model_1.pkl", "rb") as f:
-    loaded_pickle_model = pickle.load(f)
+model_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_1.pkl')
+loaded_pickle_model = pickle.load(open(model_path, 'rb'))
 
 # Define the function to make predictions
 def predict_heart_disease(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
@@ -56,10 +61,20 @@ def main():
     # When the predict button is pressed
     if st.button("Predict"):
         prediction = predict_heart_disease(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal)
+        
+        # Display result with color background based on the prediction
         if prediction == 1:
-            st.write("The patient is predicted to have heart disease.")
+            st.markdown(
+                '<div style="background-color: red; padding: 10px;">'
+                '<h2 style="color: white; text-align: center;">The patient is predicted to have heart disease.</h2>'
+                '</div>', unsafe_allow_html=True
+            )
         else:
-            st.write("The patient is predicted to not have heart disease.")
+            st.markdown(
+                '<div style="background-color: blue; padding: 10px;">'
+                '<h2 style="color: white; text-align: center;">The patient is predicted to not have heart disease.</h2>'
+                '</div>', unsafe_allow_html=True
+            )
 
 if __name__ == "__main__":
     main()
